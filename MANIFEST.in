@@ -1,0 +1,3 @@
+graft contentimport
+include *
+global-exclude *.pyc
