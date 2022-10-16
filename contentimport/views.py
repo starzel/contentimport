@@ -22,7 +22,7 @@ class ImportAll(BrowserView):
     def __call__(self):
         request = self.request
         if not request.form.get("form.submitted", False):
-            return self.template()
+            return self.index()
 
         portal = api.portal.get()
         alsoProvides(request, IContentimportLayer)
@@ -78,10 +78,6 @@ class ImportAll(BrowserView):
 
         reset_dates = api.content.get_view("reset_dates", portal, request)
         reset_dates()
-        transaction.commit()
-
-        fix_panels = api.content.get_view("fix_panels", portal, request)
-        fix_panels()
         transaction.commit()
 
         return request.response.redirect(portal.absolute_url())
