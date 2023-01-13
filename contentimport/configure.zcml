@@ -20,15 +20,6 @@
       />
 
   <browser:page
-      name="fix_html"
-      for="zope.interface.Interface"
-      class=".import_other.FixHTML"
-      template="export_other.pt"
-      layer="contentimport.interfaces.IContentimportLayer"
-      permission="cmf.ManagePortal"
-      />
-
-  <browser:page
       name="import_all"
       for="*"
       class=".views.ImportAll"
