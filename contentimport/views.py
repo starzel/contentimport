@@ -61,9 +61,12 @@ class ImportAll(BrowserView):
         for name in other_imports:
             view = api.content.get_view(f"import_{name}", portal, request)
             path = Path(directory) / f"export_{name}.json"
-            results = view(jsonfile=path.read_text(), return_json=True)
-            logger.info(results)
-            transaction.commit()
+            if path.exists():
+                results = view(jsonfile=path.read_text(), return_json=True)
+                logger.info(results)
+                transaction.commit()
+            else:
+                logger.info(f"Missing file: {path}")
 
         fixers = [table_class_fixer, img_variant_fixer]
         results = fix_html_in_content_fields(fixers=fixers)
@@ -86,35 +89,26 @@ class ImportAll(BrowserView):
 def table_class_fixer(text, obj=None):
     if "table" not in text:
         return text
-
     dropped_classes = [
         "MsoNormalTable",
         "MsoTableGrid",
     ]
     replaced_classes = {
-        "invisible": "table-borderless",
-        "plain": "table-borderless",
-        "listing": "table-striped",
+        "invisible": "invisible-grid",
     }
     soup = BeautifulSoup(text, "html.parser")
     for table in soup.find_all("table"):
-        new_classes = []
         table_classes = table.get("class", [])
-
         for dropped in dropped_classes:
             if dropped in table_classes:
                 table_classes.remove(dropped)
-
         for old, new in replaced_classes.items():
             if old in table_classes:
                 table_classes.remove(old)
                 table_classes.append(new)
-
         # all tables get the default bootstrap table class
         if "table" not in table_classes:
             table_classes.insert(0, "table")
-        if new_classes:
-            table["class"] = new_classes
 
     return soup.decode()
 
