@@ -113,6 +113,15 @@ class CustomImportContent(ImportContent):
 
     def global_dict_hook(self, item):
 
+        # Adapt this to your site
+        old_portal_id = "Plone"
+        new_portal_id = "Plone"
+
+        # This is only relevant for items in the site-root.
+        # Most items containers are usually looked up by the uuid of the old parent
+        item["@id"] = item["@id"].replace(f"/{old_portal_id}/", f"/{new_portal_id}/", 1)
+        item["parent"]["@id"] = item["parent"]["@id"].replace(f"/{old_portal_id}", f"/{new_portal_id}", 1)
+
         # update constraints
         if item.get("exportimport.constrains"):
             types_fixed = []
