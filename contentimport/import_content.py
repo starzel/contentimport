@@ -18,6 +18,7 @@ VIEW_MAPPING = {
     "folder_listing": "listing_view",
     "folder_summary_view": "summary_view",
     "folder_tabular_view": "tabular_view",
+    "atct_topic_view": "listing_view",
 }
 
 PORTAL_TYPE_MAPPING = {
@@ -117,10 +118,11 @@ class CustomImportContent(ImportContent):
         old_portal_id = "Plone"
         new_portal_id = "Plone"
 
-        # This is only relevant for items in the site-root.
-        # Most items containers are usually looked up by the uuid of the old parent
-        item["@id"] = item["@id"].replace(f"/{old_portal_id}/", f"/{new_portal_id}/", 1)
-        item["parent"]["@id"] = item["parent"]["@id"].replace(f"/{old_portal_id}", f"/{new_portal_id}", 1)
+        if old_portal_id != new_portal_id:
+            # This is only relevant for items in the site-root.
+            # Most items containers are usually looked up by the uuid of the old parent
+            item["@id"] = item["@id"].replace(f"/{old_portal_id}/", f"/{new_portal_id}/", 1)
+            item["parent"]["@id"] = item["parent"]["@id"].replace(f"/{old_portal_id}", f"/{new_portal_id}", 1)
 
         # update constraints
         if item.get("exportimport.constrains"):
@@ -191,7 +193,7 @@ class CustomImportContent(ImportContent):
 
         item["query"] = fix_collection_query(item.pop("query", []))
         if not item["query"]:
-            logger.info(f"Create collection without query: {item['@id']}")
+            logger.info("Create collection without query: %s", item["@id"])
 
         return item
 
@@ -210,7 +212,7 @@ class CustomImportContent(ImportContent):
         item["query"] = fix_collection_query(item.pop("query", []))
 
         if not item["query"]:
-            logger.info(f"Drop collection without query: {item['@id']}")
+            logger.info("Drop collection without query: %s", item['@id'])
             return
 
         return item
