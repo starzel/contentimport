@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<layers>
+    <layer name="contentimport"
+           interface="contentimport.interfaces.IContentimportLayer"
+           remove="true" />
+</layers>
